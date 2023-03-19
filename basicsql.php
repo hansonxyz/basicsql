@@ -81,15 +81,7 @@ class BasicSQL
         } catch (PDOException $ex) {
             // Error handler
 
-            // Roll back transaction if we are in a transaction
-            if ($this->in_transaction) {
-                $stmt2 = $this->db->prepare("ROLLBACK");
-                $stmt2->execute();
-                $stmt2->closeCursor();
-                $this->in_transaction = false;
-            }
-
-            throw new Exception("Fatal - query - " . $ex->getMessage() . " - " . $sql . " " . json($params));
+            throw new Exception("Fatal - query - " . $ex->getMessage() . " - " . $sql . " " . json_encode($params, JSON_PRETTY_PRINT));
         }
     }
 
