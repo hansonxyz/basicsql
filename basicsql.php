@@ -40,32 +40,42 @@ class BasicSQL
             throw new Exception("Fatal - not connected to DB");
         }
 
-        // Handle raw value substitution
-        foreach ($params as $index => $data) {
+        // Handle raw value substitution, add a : to the begining of each paramater if it doesnt exist
+        $newParams = [];
+
+        foreach ($params as $index => $value) {
+            if (substr($index,0,1) != ':') {
+                $index = ':'.$index;
+            }
+
             // Handle Rsdb::DB_NOW
             // if ($data === Rsdb::DB_NOW) {
             //     $sql = str_replace($index, 'NOW()', $sql);
             //     unset($params[$index]);
             // }
             //  Null values become NULLS
-            if ($data === null) {
+            if ($value === null) {
                 $sql = str_replace($index, "NULL", $sql);
-                unset($params[$index]);
+                continue;
             }
+
             //  True values become 1
-            if ($data === true) {
-                $params[$index] = 1;
+            if ($value === true) {
+                $value = 1;
             }
             //  False values become 0
-            if ($data === false) {
-                $params[$index] = 0;
+            if ($value === false) {
+                $value = 0;
             }
+
+            $newParams[$index] = $value;
         }
+        
 
         // Execute query
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute($params);
+            $stmt->execute($newParams);
 
             return $stmt;
         } catch (PDOException $ex) {
