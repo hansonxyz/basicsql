@@ -20,6 +20,11 @@ class BasicSQL
             $pass
         );
 
+        if (!$this->db) {
+            echo "Error connecting to backend database";
+            die();
+        }
+
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 
@@ -88,8 +93,6 @@ class BasicSQL
     /* Public interface for the query() function. Returns nothing. */
     public function query($sql, $params = [])
     {
-        global $CONFIG;
-
         $stmt = $this->_query($sql, $params);
         $stmt->closeCursor();
 
@@ -100,8 +103,6 @@ class BasicSQL
     /* Accepts an array of key => value params that are pdo paramaters */
     public function fetch_all($sql, $params = [])
     {
-        global $CONFIG;
-
         $stmt = $this->_query($sql, $params);
         try {
             $rs = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -116,8 +117,6 @@ class BasicSQL
     /* Accepts an array of key => value params that are pdo paramaters */
     public function fetch($sql, $params = [])
     {
-        global $CONFIG;
-
         $stmt = $this->_query($sql, $params);
         $rs = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
@@ -128,13 +127,11 @@ class BasicSQL
     /* Accepts an array of key => value params that are pdo paramaters */
     public function fetch_one($sql, $params = [], $index = null)
     {
-        global $CONFIG;
-
         $rs = $this->fetch($sql, $params);
 
-        if (is_array($rs) && count($rs) > 0) {
-            // var_dump(current($rs));
-            // die();
+        if (is_array($rs) && isset($rs[$index])) {
+            return $rs[$index];
+        } else if (is_array($rs) &&count($rs) > 0) {
             return current($rs);
         } else {
             return null;
