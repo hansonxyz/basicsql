@@ -1,5 +1,6 @@
-# basicsql
-A simple Generic PHP class for interfacing with MySQL
+# php-basic-sql
+
+A simple generic PHP class for interfacing with MySQL
 
 This is a PHP class that provides the bare minimum interface to connect and perform MySQL queries in a way which is friendly to the rest of a simple PHP application.
 
